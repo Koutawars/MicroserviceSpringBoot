@@ -1,0 +1,36 @@
+---
+networks:
+  default:
+    name: client_network
+services:
+  mongodb:
+    container_name: mongodb
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=root
+      - MONGO_INITDB_DATABASE=microservicesSpringTest
+    image: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - "data:/data"
+  mysql:
+    image: mysql:5.7
+    container_name: mysql
+    environment:
+      - MYSQL_DATABASE=client_practice
+      - MYSQL_ROOT_PASSWORD=root
+    ports:
+      - '3306:3306'
+  discover-client:
+    image: discover-client
+    container_name: discover-client
+    build: ./discover-client
+    environment:
+      - server.port=8761
+      - eureka.client.register-with-eureka=false
+    ports:
+      - '8761:8761'
+version: "3.8"
+volumes:
+  data: {}
