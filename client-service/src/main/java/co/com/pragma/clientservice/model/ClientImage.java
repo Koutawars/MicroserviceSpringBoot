@@ -6,10 +6,15 @@ import lombok.NoArgsConstructor;
 
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 public class ClientImage {
     private String id;
     private Integer clientId;
     private String base64;
+
+    public ClientImage(String id, Integer clientId, String base64) {
+        this.id = id;
+        this.clientId = clientId;
+        this.base64 = base64;
+    }
 }

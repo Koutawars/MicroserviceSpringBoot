@@ -30,7 +30,7 @@ public class ClientController {
         return clientService.getClient(id);
     }
 
-    @PostMapping("{id}")
+    @PutMapping("{id}")
     ClientPayload replaceClient(@RequestBody ClientPayload client, @PathVariable int id) {
         return clientService.replaceClient(client, id);
     }

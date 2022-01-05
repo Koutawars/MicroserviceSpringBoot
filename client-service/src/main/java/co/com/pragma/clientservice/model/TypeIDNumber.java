@@ -11,6 +11,6 @@ package co.com.pragma.clientservice.model;
  * {@link TypeIDNumber#PAP}: Pasaporte
  */
 
-enum TypeIDNumber {
+public enum TypeIDNumber {
     CC, TI, CE, NIP, NIT, PAP
 }

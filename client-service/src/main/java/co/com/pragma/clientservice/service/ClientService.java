@@ -6,8 +6,8 @@ import co.com.pragma.clientservice.model.Client;
 import co.com.pragma.clientservice.model.ClientImage;
 import co.com.pragma.clientservice.model.ClientPayload;
 import co.com.pragma.clientservice.repository.ClientRepository;
+import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 @Service
 @NoArgsConstructor
-@Log4j2
+@AllArgsConstructor
 public class ClientService {
 
     @Autowired
@@ -27,7 +27,7 @@ public class ClientService {
 
     public List<ClientPayload> getClients() {
         List<Client> clients = clientRepository.findAll();
-        List <ClientPayload> clientsPayload = clients.stream().map(client -> {
+        List <ClientPayload> clientsPayloads = clients.stream().map(client -> {
             ClientImage clientImage;
             String imageBase64 = null;
             try {
@@ -36,7 +36,7 @@ public class ClientService {
             }catch (Exception e){};
             return new ClientPayload(client, imageBase64);
         }).collect(Collectors.toList());
-        return clientsPayload;
+        return clientsPayloads;
     }
 
     public ClientPayload getClient(int id) {
@@ -46,6 +46,10 @@ public class ClientService {
         try {
             clientImage = clientImageFeign.getClientImage(client.getId());
         } catch (Exception e) {};
+
+        if(clientImage == null){
+            return new ClientPayload(client, null);
+        }
         return new ClientPayload(client, clientImage.getBase64());
     }
 
@@ -53,13 +57,18 @@ public class ClientService {
         Client newClient;
         int id;
         String imageBase64;
+        ClientImage clientImage;
 
-        clientPayload.setId(null);
         newClient = clientRepository.save(clientPayload.getClient());
         id = newClient.getId();
 
         imageBase64 = clientPayload.getImageBase64();
-        clientImageFeign.setImageToClient(id, imageBase64);
+        if(imageBase64 != null) {
+            if (!imageBase64.isEmpty()) {
+                clientImage = clientImageFeign.setImageToClient(id, imageBase64);
+                imageBase64 = clientImage.getBase64();
+            }
+        }
 
         clientPayload.setClient(newClient);
         clientPayload.setImageBase64(imageBase64);
@@ -75,6 +84,7 @@ public class ClientService {
         // actualiza la imagen de mongo
         clientImageFeign.updateClientImage(id, imageBase64);
         // Actualizo el cliente encontrado
+        client.updateClient(clientPayload.getClient());
         client = clientRepository.save(client);
         // Actualizo la playload
         clientPayload.setClient(client);
@@ -82,12 +92,13 @@ public class ClientService {
         return clientPayload;
     }
 
-    public void deleteById(int id) {
+    public boolean deleteById(int id) {
         Client client = clientRepository.findById(id)
                 .orElseThrow(() -> new ClientNotFoundException(id));
         clientRepository.delete(client);
         try {
             clientImageFeign.deleteClientImage(id);
         }catch (Exception e){};
+        return clientRepository.findById(id) == null;
     }
 }
