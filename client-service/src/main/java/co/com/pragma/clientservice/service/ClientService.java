@@ -1,104 +1,76 @@
 package co.com.pragma.clientservice.service;
 
-import co.com.pragma.clientservice.exception.ClientNotFoundException;
+import co.com.pragma.clientservice.dto.ClientWithImageDTO;
+import co.com.pragma.clientservice.exception.ClientCustomException;
 import co.com.pragma.clientservice.feign.ClientImageFeign;
 import co.com.pragma.clientservice.model.Client;
 import co.com.pragma.clientservice.model.ClientImage;
-import co.com.pragma.clientservice.model.ClientPayload;
 import co.com.pragma.clientservice.repository.ClientRepository;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @NoArgsConstructor
 @AllArgsConstructor
 public class ClientService {
 
-    @Autowired
     private ClientRepository clientRepository;
+    private ModelMapper modelMapper;
+    private ClientImageService clientImageService;
 
     @Autowired
-    private ClientImageFeign clientImageFeign;
+    private ClientCustomException clientCustomException;
 
-    public List<ClientPayload> getClients() {
+    @Autowired
+    public ClientService(ClientRepository clientRepository,
+                         ModelMapper modelMapper, ClientImageService clientImageService) {
+        this.clientRepository = clientRepository;
+        this.modelMapper = modelMapper;
+        this.clientImageService = clientImageService;
+    }
+
+    public List<ClientWithImageDTO> getClients() {
         List<Client> clients = clientRepository.findAll();
-        List <ClientPayload> clientsPayloads = clients.stream().map(client -> {
-            ClientImage clientImage;
-            String imageBase64 = null;
-            try {
-                clientImage = clientImageFeign.getClientImage(client.getId());
-                imageBase64 = clientImage.getBase64();
-            }catch (Exception e){};
-            return new ClientPayload(client, imageBase64);
-        }).collect(Collectors.toList());
-        return clientsPayloads;
+        return clientImageService.getImagesToClients(clients);
     }
 
-    public ClientPayload getClient(int id) {
+    public ClientWithImageDTO getClient(int id) {
         Client client = clientRepository.findById(id)
-                .orElseThrow(() -> new ClientNotFoundException(id));
-        ClientImage clientImage = null;
-        try {
-            clientImage = clientImageFeign.getClientImage(client.getId());
-        } catch (Exception e) {};
+                .orElseThrow(() -> clientCustomException.statusNotFound(id));
+        return clientImageService.getImageToClient(client);
 
-        if(clientImage == null){
-            return new ClientPayload(client, null);
-        }
-        return new ClientPayload(client, clientImage.getBase64());
     }
 
-    public ClientPayload addClient(ClientPayload clientPayload) {
-        Client newClient;
-        int id;
-        String imageBase64;
-        ClientImage clientImage;
+    public ClientWithImageDTO addClient(ClientWithImageDTO clientWithImageDTO) {
+        String imageBase64 = clientWithImageDTO.getImageBase64();
+        Client client = modelMapper.map(clientWithImageDTO, Client.class);
 
-        newClient = clientRepository.save(clientPayload.getClient());
-        id = newClient.getId();
-
-        imageBase64 = clientPayload.getImageBase64();
-        if(imageBase64 != null) {
-            if (!imageBase64.isEmpty()) {
-                clientImage = clientImageFeign.setImageToClient(id, imageBase64);
-                imageBase64 = clientImage.getBase64();
-            }
-        }
-
-        clientPayload.setClient(newClient);
-        clientPayload.setImageBase64(imageBase64);
-
-        return clientPayload;
-    }
-
-    public ClientPayload replaceClient(ClientPayload clientPayload, int id) {
-        String imageBase64 = clientPayload.getImageBase64();
-
-        Client client = clientRepository.findById(id)
-                .orElseThrow(() -> new ClientNotFoundException(id));
-        // actualiza la imagen de mongo
-        clientImageFeign.updateClientImage(id, imageBase64);
-        // Actualizo el cliente encontrado
-        client.updateClient(clientPayload.getClient());
         client = clientRepository.save(client);
-        // Actualizo la playload
-        clientPayload.setClient(client);
-        clientPayload.setImageBase64(imageBase64);
-        return clientPayload;
+
+        return clientImageService.addImageToClient(client, imageBase64);
+    }
+
+    public ClientWithImageDTO replaceClient(ClientWithImageDTO clientWithImageDTO, int id) {
+        String imageBase64 = clientWithImageDTO.getImageBase64();
+        Client client = modelMapper.map(clientWithImageDTO, Client.class);
+        client.setId(id);
+
+        clientRepository.findById(id).orElseThrow(() -> clientCustomException.statusNotFound(id));
+        clientRepository.save(client);
+
+        return clientImageService.replaceImageToClient(client, imageBase64);
     }
 
     public boolean deleteById(int id) {
         Client client = clientRepository.findById(id)
-                .orElseThrow(() -> new ClientNotFoundException(id));
+                .orElseThrow(() -> clientCustomException.statusNotFound(id));
         clientRepository.delete(client);
-        try {
-            clientImageFeign.deleteClientImage(id);
-        }catch (Exception e){};
+        clientImageService.deleteClientImage(id);
         return clientRepository.findById(id) == null;
     }
 }

@@ -3,9 +3,10 @@ package co.com.pragma.clientservice.feign;
 import co.com.pragma.clientservice.model.ClientImage;
 
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
-@FeignClient("CLIENT-IMAGE")
+@FeignClient(name="CLIENT-IMAGE", fallback = ClientImageFeign.HystrixClientFallback.class)
 public interface ClientImageFeign {
 
     @GetMapping("{clientId}")
@@ -20,8 +21,9 @@ public interface ClientImageFeign {
     @DeleteMapping("{clientId}")
     void deleteClientImage(@PathVariable Integer clientId);
 
-    /*
-    static class HystrixClientFallback implements ClientImageFeign {
+
+    @Component
+    class HystrixClientFallback implements ClientImageFeign {
 
         @Override
         public ClientImage getClientImage(Integer clientId) {
@@ -39,8 +41,10 @@ public interface ClientImageFeign {
         }
 
         @Override
-        public void updateClientImage(Integer clientId){};
+        public void deleteClientImage(Integer clientId) {
+            throw new RuntimeException();
+        }
+
     }
-    */
 
 }

@@ -1,15 +1,14 @@
 package co.com.pragma.clientservice.model;
 
-import io.swagger.annotations.ApiModel;
 import lombok.*;
+import net.minidev.json.annotate.JsonIgnore;
 
 import javax.persistence.*;
 
 @Entity
-@ApiModel
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
+@Getter @Setter
 public class Client {
 
     @Id
@@ -27,26 +26,7 @@ public class Client {
      */
     private TypeIDNumber typeIDNumber;
     private long idNumber;
-
-    public void updateClient(Client client) {
-        this.names = client.getNames();
-        this.lastNames = client.getLastNames();
-        this.age = client.getAge();
-        this.city = client.getCity();
-        this.typeIDNumber = client.getTypeIDNumber();
-        this.idNumber = client.getIdNumber();
-    }
-
-    public Client(Client client) {
-        this.id = client.getId();
-        this.names = client.getNames();
-        this.lastNames = client.getLastNames();
-        this.age = client.getAge();
-        this.city = client.getCity();
-        this.typeIDNumber = client.getTypeIDNumber();
-        this.idNumber = client.getIdNumber();
-    }
-
-
+    @Transient
+    private ClientImage image;
 }
 
