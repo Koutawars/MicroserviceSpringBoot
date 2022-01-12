@@ -16,6 +16,7 @@
       <module name="client-image-service" target="11" />
       <module name="client-service" target="11" />
       <module name="discover-client" target="11" />
+      <module name="zuul-gateway" target="11" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
@@ -23,6 +24,7 @@
       <module name="client-image-service" options="-parameters" />
       <module name="client-service" options="-parameters" />
       <module name="discover-client" options="-parameters" />
+      <module name="zuul-gateway" options="-parameters" />
     </option>
   </component>
 </project>
