@@ -19,7 +19,9 @@ public class Client {
 
     public boolean isImageOk() {
         if(this.image != null) {
-            return !(this.image.getBase64().isEmpty() && this.image.getBase64().isBlank());
+            if(this.image.getBase64() != null) {
+                return !(this.image.getBase64().isEmpty() && this.image.getBase64().isBlank());
+            }
         }
         return false;
     }

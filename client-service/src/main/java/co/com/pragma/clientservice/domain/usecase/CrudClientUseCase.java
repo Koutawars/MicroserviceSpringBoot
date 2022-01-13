@@ -25,7 +25,7 @@ public class CrudClientUseCase {
 
     public Client update(int id, Client client) {
         Client clientUpdate = clientRepository.update(id, client);
-        return imageUseCase.replaceImageToClient(clientUpdate, client.getImage().getBase64());
+        return imageUseCase.replaceImageToClient(clientUpdate);
     }
 
     public void delete(int id) {

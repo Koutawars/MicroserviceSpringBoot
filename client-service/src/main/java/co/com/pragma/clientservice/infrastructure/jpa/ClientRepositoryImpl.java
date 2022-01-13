@@ -49,8 +49,8 @@ public class ClientRepositoryImpl implements ClientRepository {
 
     @Override
     public Client update(int id, Client client) {
+        this.read(id);
         client.setId(id);
-        client = this.read(id);
         ClientEntity updateClientEntity = modelMapper.map(client, ClientEntity.class);
         updateClientEntity = clientJpaRepository.save(updateClientEntity);
         updateClientEntity.setImage(client.getImage());

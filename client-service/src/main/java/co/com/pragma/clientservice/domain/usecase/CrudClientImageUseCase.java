@@ -42,10 +42,22 @@ public class CrudClientImageUseCase {
         return client;
     }
 
-    public Client replaceImageToClient(Client client, String imageBase64) {
+    public Client replaceImageToClient(Client client) {
         int id = client.getId();
-        ClientImage clientImage = clientImageRepository.updateClientImage(id, imageBase64);
-        client.setImage(clientImage);
+        ClientImage image = clientImageRepository.getClientImage(id);
+        // Si la imagen esta bien
+        if(client.isImageOk()) {
+            ClientImage clientImage;
+            String base64 = client.getImage().getBase64();
+            // No tengo una imagen entonces la creo
+            if(image == null){
+                clientImage = clientImageRepository.setImageToClient(id, base64);
+            } else {
+                // Si ya tengo una, la actualizo
+                clientImage = clientImageRepository.updateClientImage(id, base64);
+            }
+            client.setImage(clientImage);
+        } else client.setImage(image);
         return client;
     }
 
