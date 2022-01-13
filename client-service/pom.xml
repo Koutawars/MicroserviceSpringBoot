@@ -138,12 +138,7 @@
 	</dependencyManagement>
 
 	<build>
-		<resources>
-			<resource>
-				<directory>src/main/co/com/pragma/clientservice</directory>
-				<filtering>true</filtering>
-			</resource>
-		</resources>
+		<finalName>client-service</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
