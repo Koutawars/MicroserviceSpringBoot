@@ -7,9 +7,10 @@ import co.com.pragma.clientservice.domain.model.gateways.ClientRepository;
 import co.com.pragma.clientservice.infrastructure.jpa.ClientRepositoryImpl;
 import co.com.pragma.clientservice.infrastructure.jpa.entities.ClientEntity;
 import co.com.pragma.clientservice.infrastructure.jpa.repositories.ClientJpaRepository;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -38,11 +39,6 @@ class CrudClientUseCaseTest {
     private ClientRepository clientRepository = new ClientRepositoryImpl(clientJpaRepository, modelMapper);
     @InjectMocks
     private CrudClientImageUseCase imageUseCase;
-
-    @Before
-    public void init() {
-        MockitoAnnotations.initMocks(this);
-    }
 
     @BeforeEach
     public void beforeEach() {
@@ -81,9 +77,11 @@ class CrudClientUseCaseTest {
 
     @Test
     void delete() {
+
     }
 
     @Test
     void getAll() {
+
     }
 }
