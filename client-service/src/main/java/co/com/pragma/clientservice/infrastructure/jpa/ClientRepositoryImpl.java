@@ -5,8 +5,7 @@ import co.com.pragma.clientservice.domain.model.exception.ApiRequestException;
 import co.com.pragma.clientservice.domain.model.gateways.ClientRepository;
 import co.com.pragma.clientservice.infrastructure.jpa.entities.ClientEntity;
 import co.com.pragma.clientservice.infrastructure.jpa.repositories.ClientJpaRepository;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,7 +18,9 @@ import java.util.stream.Collectors;
 
 @Repository
 @AllArgsConstructor
-@Data
+@Getter
+@Setter
+@ToString
 public class ClientRepositoryImpl implements ClientRepository {
 
     ClientJpaRepository clientJpaRepository;
