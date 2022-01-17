@@ -5,10 +5,7 @@ import co.com.pragma.clientservice.domain.model.TypeIDNumber;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
@@ -17,12 +14,12 @@ import javax.validation.constraints.NotNull;
 @Getter @Setter
 @NoArgsConstructor
 @ApiModel
-@ToString
+@EqualsAndHashCode
 public class ClientWithImageDTO {
 
     @Schema(description = "Identificador unico del cliente.",
             example = "1")
-    private int id;
+    private Integer id;
     @Schema(description = "Nombres del cliente.",
             example = "Karen Alessandra", required = true)
     @NotEmpty(message = "campo no vacío")
@@ -56,7 +53,7 @@ public class ClientWithImageDTO {
             required = false)
     private String imageBase64;
 
-    public ClientWithImageDTO(int id, String names, String lastNames, int age, String city, TypeIDNumber typeIDNumber, long idNumber, String imageBase64) {
+    public ClientWithImageDTO(Integer id, String names, String lastNames, int age, String city, TypeIDNumber typeIDNumber, long idNumber, String imageBase64) {
         this.id = id;
         this.names = names;
         this.lastNames = lastNames;

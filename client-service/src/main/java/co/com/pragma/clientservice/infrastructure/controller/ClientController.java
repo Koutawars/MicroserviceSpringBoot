@@ -44,7 +44,7 @@ public class ClientController {
                             content = @Content(schema = @Schema(
                                     implementation = ClientWithImageDTO.class)))})
     @GetMapping
-    List<ClientWithImageDTO> getClients() {
+    public List<ClientWithImageDTO> getClients() {
         //@RequestParam(required = false) Long idNumber, @RequestParam(required = false) TypeIDNumber typeIDNumber
         // System.out.println("idNumber: " + idNumber + " typeIDNumber: " + typeIDNumber);
         List<Client> clients = clientUseCase.getAll();
@@ -70,7 +70,7 @@ public class ClientController {
                             description = "Error en el proceso.",
                             content = @Content(schema = @Schema(implementation = Exception.class)))})
     @PostMapping
-    ClientWithImageDTO newClient(@RequestBody @Validated ClientWithImageDTO clientWithImageDTO,
+    public ClientWithImageDTO newClient(@RequestBody @Validated ClientWithImageDTO clientWithImageDTO,
                                  BindingResult errors) {
         if(errors.hasErrors()) throw customException.validationException(errors);
         Client client = mapper.clientWithImageDTOToClient(clientWithImageDTO);
@@ -93,7 +93,7 @@ public class ClientController {
                             description = "No se encontro el usuario a buscar.",
                             content = @Content(schema = @Schema(implementation = ApiRequestException.class)))})
     @GetMapping("{id}")
-    ClientWithImageDTO getClient(@PathVariable int id) {
+    public ClientWithImageDTO getClient(@PathVariable int id) {
         Client client = clientUseCase.read(id);
         return mapper.clientToClientWithImageDTO(client);
     }
@@ -113,7 +113,7 @@ public class ClientController {
                             description = "No se encontro el usuario a reemplazar.",
                             content = @Content(schema = @Schema(implementation = ApiRequestException.class)))})
     @PutMapping("{id}")
-    ClientWithImageDTO replaceClient(@PathVariable("id") int id,
+    public ClientWithImageDTO replaceClient(@PathVariable("id") int id,
                                      @RequestBody @Validated ClientWithImageDTO clientWithImageDTO,
                                      BindingResult errors){
         if(errors.hasErrors()) throw customException.validationException(errors);
@@ -137,7 +137,7 @@ public class ClientController {
                             description = "No se encontro el usuario a borrar.",
                             content = @Content(schema = @Schema(implementation = ApiRequestException.class)))})
     @DeleteMapping("{id}")
-    void deleteClient(@PathVariable int id) {
+    public void deleteClient(@PathVariable int id) {
         clientUseCase.delete(id);
     }
 }

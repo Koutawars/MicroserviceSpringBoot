@@ -9,8 +9,11 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin(origins = "*")
 public class ClientImageController {
 
-    @Autowired
     ClientImageService clientImageService;
+
+    public ClientImageController(ClientImageService clientImageService) {
+        this.clientImageService = clientImageService;
+    }
 
     @GetMapping("{clientId}")
     ClientImage getClientImage(@PathVariable Integer clientId) {
